@@ -21,7 +21,8 @@ router.post('/signUp', [
           },
         })
       }
-      const { login, password, name } = req.body
+      const { login, password, name, isAdmin } = req.body
+
       const existingUser = await User.findOne({ login })
       if (existingUser) {
         return res.status(400).json({
@@ -37,6 +38,7 @@ router.post('/signUp', [
         name,
         login,
         password: hashedPassword,
+        isAdmin,
       })
       const tokens = tokenService.generate({ _id: newUser._id })
       await tokenService.save(newUser._id, tokens.refreshToken)
