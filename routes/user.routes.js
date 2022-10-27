@@ -1,5 +1,6 @@
 const express = require('express')
 const User = require('../models/User')
+const Token = require('../models/Token')
 const router = express.Router({ mergeParams: true })
 const auth = require('../middleware/auth.middleware')
 
@@ -22,6 +23,19 @@ router.get('/', auth, async (req, res) => {
   } catch (e) {
     console.error(e)
     res.status(500).json({ message: 'На сервере произошла ошибка' })
+  }
+})
+router.delete('/:userId', auth, async (req, res) => {
+  try {
+    const { userId } = req.params
+    await User.findByIdAndRemove(userId)
+    await Token.findOneAndRemove({ user: userId })
+
+    return res.send(userId)
+  } catch (e) {
+    res.status(500).json({
+      message: 'На сервере произошла ошибка. Попробуйте позже',
+    })
   }
 })
 
