@@ -4,7 +4,7 @@ const router = express.Router({ mergeParams: true })
 
 router.get('/', async (req, res) => {
   try {
-    const list = await Shedule.find()
+    const list = await Shedule.findOne()
     res.send(list)
   } catch (e) {
     console.error(e)
