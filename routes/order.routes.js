@@ -1,13 +1,12 @@
 const express = require('express')
 const Order = require('../models/Order')
 const router = express.Router({ mergeParams: true })
-const bcrypt = require('bcryptjs')
-const tokenService = require('../services/token.service')
+const orderService = require('../services/order.service')
 const { check, validationResult } = require('express-validator')
 
 router.post('/sendOrder', [
-  check('fio', 'ФИО не должно быть пустым').notEmpty(),
-  check('date_of_birth', 'Дата рождения не должно быть пустым').notEmpty(),
+  check('name', 'ФИО не должно быть пустым').notEmpty(),
+  check('dateOfBirth', 'Дата рождения не должно быть пустым').notEmpty(),
   async (req, res) => {
     try {
       const errors = validationResult(req)
@@ -20,9 +19,12 @@ router.post('/sendOrder', [
           },
         })
       }
-      const { fio, date_of_birth, target, doctor } = req.body
+      // const { name, dateOfBirth, diagnosis, doctor } = req.body
+      const cryptedData = orderService.crypt({ ...req.body })
 
-      res.status(200).send({ fio, date_of_birth, target, doctor })
+      const decryptedData = orderService.decrypt(cryptedData)
+
+      res.status(200).send(decryptedData)
     } catch (e) {
       console.error(e)
       res.status(500).json({ message: 'На сервере произошла ошибка' })

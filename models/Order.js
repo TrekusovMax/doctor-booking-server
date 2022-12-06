@@ -2,19 +2,7 @@ const { Schema, model } = require('mongoose')
 
 const schema = Schema(
   {
-    fio: {
-      type: String,
-      required: true,
-    },
-    date_of_birth: {
-      type: Date,
-      required: true,
-    },
-    target: {
-      type: String,
-      required: true,
-    },
-    doctor: {
+    order_string: {
       type: String,
       required: true,
     },
