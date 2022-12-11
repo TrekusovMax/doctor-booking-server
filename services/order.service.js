@@ -19,12 +19,7 @@ class OrderService {
       Securitykey,
       initVector,
     )
-
-    // encrypt the message
-    // input encoding
-    // output encoding
     let encryptedData = cipher.update(message, 'utf-8', 'hex')
-
     encryptedData += cipher.final('hex')
     return encryptedData
   }

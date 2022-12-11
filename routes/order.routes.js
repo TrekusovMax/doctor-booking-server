@@ -5,8 +5,6 @@ const orderService = require('../services/order.service')
 const { check, validationResult } = require('express-validator')
 
 router.post('/sendOrder', [
-  check('name', 'ФИО не должно быть пустым').notEmpty(),
-  check('dateOfBirth', 'Дата рождения не должно быть пустым').notEmpty(),
   async (req, res) => {
     try {
       const errors = validationResult(req)
@@ -19,12 +17,43 @@ router.post('/sendOrder', [
           },
         })
       }
-      // const { name, dateOfBirth, diagnosis, doctor } = req.body
-      const cryptedData = orderService.crypt({ ...req.body })
+      const { name, dateOfBirth, diagnosis, doctor, title, start, end } =
+        req.body
 
-      const decryptedData = orderService.decrypt(cryptedData)
+      const cryptedData = orderService.crypt({
+        name,
+        dateOfBirth,
+        diagnosis,
+        doctor,
+        title,
+      })
 
-      res.status(200).send(decryptedData)
+      const newOrder = await Order.create({ order: cryptedData, start, end })
+
+      res.status(200).send({ id: newOrder._id, ...req.body })
+    } catch (e) {
+      console.error(e)
+      res.status(500).json({ message: 'На сервере произошла ошибка' })
+    }
+  },
+])
+router.get('/getOrders', [
+  async (req, res) => {
+    try {
+      const ordersList = await Order.find()
+
+      const decodedOrdersList = ordersList.map((item) => {
+        return {
+          id: item._id,
+          ...JSON.parse(orderService.decrypt(item.order)),
+          start: item.start,
+          end: item.end,
+          isOpen: item.isOpen,
+        }
+      })
+      //const decryptedData = orderService.decrypt(cryptedData)
+
+      res.status(200).send(decodedOrdersList)
     } catch (e) {
       console.error(e)
       res.status(500).json({ message: 'На сервере произошла ошибка' })
