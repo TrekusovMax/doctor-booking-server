@@ -2,7 +2,7 @@ const express = require('express')
 const Order = require('../models/Order')
 const router = express.Router({ mergeParams: true })
 const orderService = require('../services/order.service')
-const { check, validationResult } = require('express-validator')
+const { validationResult } = require('express-validator')
 
 router.post('/sendOrder', [
   async (req, res) => {
@@ -37,7 +37,7 @@ router.post('/sendOrder', [
     }
   },
 ])
-router.get('/getOrders', [
+router.get('/getAllOrders', [
   async (req, res) => {
     try {
       const ordersList = await Order.find()
@@ -51,8 +51,33 @@ router.get('/getOrders', [
           isOpen: item.isOpen,
         }
       })
-      //const decryptedData = orderService.decrypt(cryptedData)
+      res.status(200).send(decodedOrdersList)
+    } catch (e) {
+      console.error(e)
+      res.status(500).json({ message: 'На сервере произошла ошибка' })
+    }
+  },
+])
+router.get('/getOrdersByMonth/:month/:year', [
+  async (req, res) => {
+    const { month, year } = req.params
+    try {
+      const openList = await Order.find({ isOpen: true })
+      const ordersList = openList.filter(
+        (item) =>
+          item.start.getMonth() + 1 === Number(month) &&
+          item.start.getFullYear() === Number(year),
+      )
 
+      const decodedOrdersList = ordersList.map((item) => {
+        return {
+          id: item._id,
+          ...JSON.parse(orderService.decrypt(item.order)),
+          start: item.start,
+          end: item.end,
+          isOpen: item.isOpen,
+        }
+      })
       res.status(200).send(decodedOrdersList)
     } catch (e) {
       console.error(e)
