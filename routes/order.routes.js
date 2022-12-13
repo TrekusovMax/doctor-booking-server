@@ -58,16 +58,26 @@ router.get('/getAllOrders', [
     }
   },
 ])
-router.get('/getOrdersByMonth/:month/:year', [
+router.get('/getOrdersOnMonth/:month/:year', [
   async (req, res) => {
     const { month, year } = req.params
     try {
-      const openList = await Order.find({ isOpen: true })
-      const ordersList = openList.filter(
+      const ordersList = await Order.find({
+        isOpen: true,
+        start: {
+          $gte: new Date(year, month - 1, 1),
+        },
+        end: {
+          $lte: new Date(year, month, 0),
+        },
+      })
+      /* const ordersList = openList.filter(
         (item) =>
           item.start.getMonth() + 1 === Number(month) &&
           item.start.getFullYear() === Number(year),
       )
+      console.log(new Date(year, month, 1)) */
+      //console.log(openList)
 
       const decodedOrdersList = ordersList.map((item) => {
         return {
