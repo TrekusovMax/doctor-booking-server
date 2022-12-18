@@ -3,6 +3,7 @@ const Order = require('../models/Order')
 const router = express.Router({ mergeParams: true })
 const orderService = require('../services/order.service')
 const { validationResult } = require('express-validator')
+const auth = require('../middleware/auth.middleware')
 
 router.post('/sendOrder', [
   async (req, res) => {
@@ -71,13 +72,6 @@ router.get('/getOrdersOnMonth/:month/:year', [
           $lte: new Date(year, month, 0),
         },
       })
-      /* const ordersList = openList.filter(
-        (item) =>
-          item.start.getMonth() + 1 === Number(month) &&
-          item.start.getFullYear() === Number(year),
-      )
-      console.log(new Date(year, month, 1)) */
-      //console.log(openList)
 
       const decodedOrdersList = ordersList.map((item) => {
         return {
@@ -95,5 +89,34 @@ router.get('/getOrdersOnMonth/:month/:year', [
     }
   },
 ])
+
+router.patch('/:orderId', async (req, res) => {
+  const { orderId } = req.params
+  try {
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { isOpen: false },
+      {
+        new: true,
+      },
+    )
+    if (!updatedOrder) throw new Error('Запись не найдена!')
+    res.send(updatedOrder._id)
+  } catch (e) {
+    console.log(e)
+    res.status(500).json({ message: e.message })
+  }
+})
+router.delete('/:orderId', async (req, res) => {
+  const { orderId } = req.params
+  try {
+    const deletedOrder = await Order.findByIdAndRemove(orderId)
+    if (!deletedOrder) throw new Error('Запись не найдена!')
+    res.send(deletedOrder._id)
+  } catch (e) {
+    console.log(e)
+    res.status(500).json({ message: e.message })
+  }
+})
 
 module.exports = router
