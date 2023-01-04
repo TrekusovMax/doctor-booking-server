@@ -18,11 +18,11 @@ router.post('/sendOrder', [
           },
         })
       }
-      const { name, dateOfBirth, diagnosis, doctor, title, start, end } =
+      const { name, dateOfBirth, phone, diagnosis, doctor, title, start, end } =
         req.body
-
       const cryptedData = orderService.crypt({
         name,
+        phone,
         dateOfBirth,
         diagnosis,
         doctor,
@@ -32,6 +32,28 @@ router.post('/sendOrder', [
       const newOrder = await Order.create({ order: cryptedData, start, end })
 
       res.status(200).send({ id: newOrder._id, ...req.body })
+    } catch (e) {
+      console.error(e)
+      res.status(500).json({ message: 'На сервере произошла ошибка' })
+    }
+  },
+])
+router.get('/getOrderById/:id', [
+  async (req, res) => {
+    const { id } = req.params
+    try {
+      const order = await Order.findById(id)
+      if (!order) throw new Error('Запись не найдена!')
+
+      const decodedOrder = {
+        id: order._id,
+        ...JSON.parse(orderService.decrypt(order.order)),
+        start: order.start,
+        end: order.end,
+        isOpen: order.isOpen,
+      }
+
+      res.status(200).send(decodedOrder)
     } catch (e) {
       console.error(e)
       res.status(500).json({ message: 'На сервере произошла ошибка' })
@@ -52,6 +74,7 @@ router.get('/getAllOrders', [
           isOpen: item.isOpen,
         }
       })
+
       res.status(200).send(decodedOrdersList)
     } catch (e) {
       console.error(e)
