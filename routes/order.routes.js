@@ -51,6 +51,7 @@ router.get('/getOrderById/:id', [
         start: order.start,
         end: order.end,
         isOpen: order.isOpen,
+        createdAt: order.createdAt,
       }
 
       res.status(200).send(decodedOrder)
@@ -72,6 +73,7 @@ router.get('/getAllOrders', [
           start: item.start,
           end: item.end,
           isOpen: item.isOpen,
+          createdAt: item.createdAt,
         }
       })
 
@@ -103,6 +105,7 @@ router.get('/getOrdersOnMonth/:month/:year', [
           start: item.start,
           end: item.end,
           isOpen: item.isOpen,
+          createdAt: item.createdAt,
         }
       })
       res.status(200).send(decodedOrdersList)
