@@ -4,7 +4,7 @@ const router = express.Router({ mergeParams: true })
 
 router.get('/', async (req, res) => {
   try {
-    const list = await Shedule.find()
+    const list = await Shedule.findOne()
     res.send(list)
   } catch (e) {
     console.error(e)
@@ -16,12 +16,14 @@ router.put('/:id', async (req, res) => {
   const { id } = req.params
 
   try {
+    if (id === 'undefined') {
+      const createdShedule = await Shedule.create(req.body)
+      return res.send(createdShedule)
+    }
     const newShedule = await Shedule.findByIdAndUpdate(id, req.body, {
       new: true,
     })
-    if (newShedule === null) {
-      await Shedule.create(req.body)
-    }
+
     res.send(newShedule)
   } catch (e) {
     console.error(e)
