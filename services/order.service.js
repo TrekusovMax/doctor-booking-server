@@ -5,17 +5,17 @@ class OrderService {
   crypt(payload) {
     // generate 16 bytes of random data
 
-    const initVector = Buffer.from(config.get('initVector'), 'hex')
+    const initVector = Buffer.from(process.env.INIT_VECTOR, 'hex')
 
     // protected data
     const message = JSON.stringify(payload)
 
     // secret key generate 32 bytes of random data
-    const Securitykey = Buffer.from(config.get('Securitykey'), 'hex')
+    const Securitykey = Buffer.from(process.env.SECURITY_KEY, 'hex')
 
     // the cipher function
     const cipher = crypto.createCipheriv(
-      config.get('algorithm'),
+      process.env.ALGORITHM,
       Securitykey,
       initVector,
     )
@@ -24,10 +24,10 @@ class OrderService {
     return encryptedData
   }
   decrypt(payload) {
-    const Securitykey = Buffer.from(config.get('Securitykey'), 'hex')
-    const initVector = Buffer.from(config.get('initVector'), 'hex')
+    const Securitykey = Buffer.from(process.env.SECURITY_KEY, 'hex')
+    const initVector = Buffer.from(process.env.INIT_VECTOR, 'hex')
     const decipher = crypto.createDecipheriv(
-      config.get('algorithm'),
+      process.env.ALGORITHM,
       Securitykey,
       initVector,
     )
