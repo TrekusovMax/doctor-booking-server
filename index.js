@@ -1,7 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const chalk = require('chalk')
-const config = require('config')
 const cors = require('cors')
 const routes = require('./routes')
 
@@ -18,9 +17,7 @@ app.use('/api', routes)
 } else {
   console.log('development')
 } */
-router.get('/', (req, res) => {
-  res.status(200).send('WORK!')
-})
+
 async function start() {
   try {
     await mongoose.connect(process.env.MONGO_URI)

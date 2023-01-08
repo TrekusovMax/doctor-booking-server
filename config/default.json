@@ -1,1 +1,9 @@
-{}
+{
+  "port": 8080,
+  "mongoURI": "mongodb://uzyzxjwcqktpffvt784t:3LckghpgcFxabwcanSHa@n1-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017,n2-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017/bxjin3rtbeaz0qb?replicaSet=rs0",
+  "accessSecret": "super secret from backend",
+  "refreshSecret": "refresh key",
+  "algorithm": "aes-256-cbc",
+  "initVector": "07c1cc98ca3bb83e9ff5d3c2c68c8a681",
+  "Securitykey": "28a7428bfa69ae8cff0edbfee08d51847ca6636b732ee03a8a52064d363ae5d0"
+}
